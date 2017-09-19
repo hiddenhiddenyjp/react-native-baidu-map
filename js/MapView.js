@@ -58,7 +58,6 @@ export default class MapView extends Component {
   }
 
   render() {
-    console.warn('9998889');
     return <BaiduMapView {...this.props} onChange={this._onChange.bind(this)}/>;
   }
 }
