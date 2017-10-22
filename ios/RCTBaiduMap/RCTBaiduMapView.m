@@ -7,6 +7,7 @@
 //
 
 #import "RCTBaiduMapView.h"
+#import "FFLoactionAnotation.h"
 
 @implementation RCTBaiduMapView {
     BMKMapView* _mapView;
@@ -24,7 +25,7 @@
     CLLocationCoordinate2D point = CLLocationCoordinate2DMake(lat, lng);
     self.centerCoordinate = point;
 }
-
+/*
 -(void)setMarker:(NSDictionary *)option {
     NSLog(@"setMarker");
     if(option != nil) {
@@ -37,6 +38,7 @@
         }
     }
 }
+ */
 
 -(void)setMarkers:(NSArray *)markers {
     int markersCount = [markers count];
@@ -81,6 +83,7 @@
     }
 }
 
+
 -(CLLocationCoordinate2D)getCoorFromMarkerOption:(NSDictionary *)option {
     double lat = [RCTConvert double:option[@"latitude"]];
     double lng = [RCTConvert double:option[@"longitude"]];
@@ -91,8 +94,21 @@
 }
 
 -(void)addMarker:(BMKPointAnnotation *)annotation option:(NSDictionary *)option {
-    [self updateMarker:annotation option:option];
-    [self addAnnotation:annotation];
+//    [self updateMarker:annotation option:option];
+    
+    CLLocationCoordinate2D coor = [self getCoorFromMarkerOption:option];
+    NSString *title = [RCTConvert NSString:option[@"title"]];
+    if(title.length == 0) {
+        title = nil;
+    }
+    FFLoactionAnotation *ann = [[FFLoactionAnotation alloc] init];
+    ann.coordinate = coor;
+    ann.title = title;
+    
+    ann.companyId = option[@"companyId"];
+    ann.address = option[@"address"];
+    [self addAnnotation:ann];
+    
 }
 
 -(void)updateMarker:(BMKPointAnnotation *)annotation option:(NSDictionary *)option {
