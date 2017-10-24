@@ -70,8 +70,8 @@
 - (UIImageView *)imageView{
     if (!_imageView) {
         _imageView = [[UIImageView alloc] init];
-        NSString *path = [[NSBundle mainBundle] pathForResource:@"blue" ofType:@"png"];
-        _imageView.image = [UIImage imageNamed:@"blue"];//[UIImage imageWithContentsOfFile:path];
+//        NSString *path = [[NSBundle mainBundle] pathForResource:@"blue" ofType:@"png"];
+        _imageView.image = [self fixImage:[UIImage imageNamed:@"blue"] oriImageSize:CGSizeMake(71, 33) targetSize:self.bounds.size];//[UIImage imageWithContentsOfFile:path];
     }
     return _imageView;
 }
@@ -98,10 +98,10 @@
     */
     if (annotation.selected) {
         NSString *path = [[NSBundle mainBundle] pathForResource:@"red" ofType:@"png"];
-        self.imageView.image = [UIImage imageNamed:@"red"];//[UIImage imageWithContentsOfFile:path];
+        self.imageView.image = [self fixImage:[UIImage imageNamed:@"red"] oriImageSize:CGSizeMake(71, 33) targetSize:self.bounds.size];//[UIImage imageWithContentsOfFile:path];
     }else{
         NSString *path = [[NSBundle mainBundle] pathForResource:@"blue" ofType:@"png"];
-        self.imageView.image = [UIImage imageNamed:@"blue"];//[UIImage imageWithContentsOfFile:path];
+        self.imageView.image = [self fixImage:[UIImage imageNamed:@"blue"] oriImageSize:CGSizeMake(71, 33) targetSize:self.bounds.size];//[UIImage imageWithContentsOfFile:path];
     }
     
     self.imageView.frame = CGRectMake(0, 0, self.bounds.size.width, self.bounds.size.height);
@@ -112,9 +112,22 @@
 
 - (void)upDateWithSelectState:(BOOL)isSelect{
     if (isSelect) {
-        self.imageView.image = [UIImage imageNamed:@"red"];
+        self.imageView.image = [self fixImage:[UIImage imageNamed:@"red"] oriImageSize:CGSizeMake(71, 33) targetSize:self.bounds.size];
     }else{
-        self.imageView.image = [UIImage imageNamed:@"blue"];
+        self.imageView.image = [self fixImage:[UIImage imageNamed:@"blue"] oriImageSize:CGSizeMake(71, 33) targetSize:self.bounds.size];
     }
 }
+
+- (UIImage *)fixImage:(UIImage *)image oriImageSize:(CGSize)oriSize targetSize:(CGSize)targetSize{
+    UIImage *temp = [image resizableImageWithCapInsets:UIEdgeInsetsMake(10, 10, 20, oriSize.width - 11) resizingMode:UIImageResizingModeStretch];
+    
+    CGFloat tempWidth = targetSize.width/2+oriSize.width/2;
+    UIGraphicsBeginImageContextWithOptions(CGSizeMake(tempWidth, targetSize.height), NO, 1);
+    [temp drawInRect:CGRectMake(0, 0, tempWidth, targetSize.height)];
+    UIImage *newImg = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    
+    return [newImg resizableImageWithCapInsets:UIEdgeInsetsMake(10, tempWidth - 11, 20, 10) resizingMode:UIImageResizingModeStretch];
+}
+
 @end

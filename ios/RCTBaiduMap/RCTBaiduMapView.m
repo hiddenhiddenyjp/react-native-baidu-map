@@ -8,6 +8,7 @@
 
 #import "RCTBaiduMapView.h"
 #import "FFLoactionAnotation.h"
+#import "ZKLoactionAnotation.h"
 
 @implementation RCTBaiduMapView {
     BMKMapView* _mapView;
@@ -96,19 +97,33 @@
 -(void)addMarker:(BMKPointAnnotation *)annotation option:(NSDictionary *)option {
 //    [self updateMarker:annotation option:option];
     
-    CLLocationCoordinate2D coor = [self getCoorFromMarkerOption:option];
-    NSString *title = [RCTConvert NSString:option[@"title"]];
-    if(title.length == 0) {
-        title = nil;
+    if (option[@"main_marker"] != nil && ![option[@"main_marker"] isEqualToString:@""]) {
+        //从某一个职位进入地图添加标签
+        CLLocationCoordinate2D coor = [self getCoorFromMarkerOption:option];
+        NSString *title = [RCTConvert NSString:option[@"title"]];
+        if(title.length == 0) {
+            title = nil;
+        }
+        ZKLoactionAnotation *ann = [[ZKLoactionAnotation alloc] init];
+        ann.coordinate = coor;
+        ann.title = title;
+        
+        [self addAnnotation:ann];
+    }else{
+        //从地图模式加载标签
+        CLLocationCoordinate2D coor = [self getCoorFromMarkerOption:option];
+        NSString *title = [RCTConvert NSString:option[@"title"]];
+        if(title.length == 0) {
+            title = nil;
+        }
+        FFLoactionAnotation *ann = [[FFLoactionAnotation alloc] init];
+        ann.coordinate = coor;
+        ann.title = title;
+        
+        ann.companyId = option[@"companyId"];
+        ann.address = option[@"address"];
+        [self addAnnotation:ann];
     }
-    FFLoactionAnotation *ann = [[FFLoactionAnotation alloc] init];
-    ann.coordinate = coor;
-    ann.title = title;
-    
-    ann.companyId = option[@"companyId"];
-    ann.address = option[@"address"];
-    [self addAnnotation:ann];
-    
 }
 
 -(void)updateMarker:(BMKPointAnnotation *)annotation option:(NSDictionary *)option {
@@ -121,5 +136,8 @@
     annotation.title = title;
 }
 
+- (void)dealloc{
+    NSLog(@"aaa");
+}
 
 @end

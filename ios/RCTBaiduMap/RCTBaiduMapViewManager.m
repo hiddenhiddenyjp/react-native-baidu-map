@@ -10,6 +10,8 @@
 #import "FFLoactionAnotation.h"
 #import "FFCustomAnnotationView.h"
 #import "FFMyLocationView.h"
+#import "ZKLoactionAnotation.h"
+#import "ZKCustomAnnotationView.h"
 
 @interface RCTBaiduMapViewManager ()<customAnnotationViewDelegate>
 @property (nonatomic, strong) NSMutableArray *annotions;
@@ -48,12 +50,12 @@ RCT_CUSTOM_VIEW_PROPERTY(center, CLLocationCoordinate2D, RCTBaiduMapView) {
 }
 
 - (UIView *)view {
-    if (_mapView) {
-        return nil;
-    }
+//    if (_mapView) {
+//        return _mapView;
+//    }
     RCTBaiduMapView* mapView = [[RCTBaiduMapView alloc] init];
     mapView.delegate = self;
-    _mapView = mapView;
+//    _mapView = mapView;
 //    FFLoactionAnotation *firstTation = [[FFLoactionAnotation alloc] initWithtitle:@"hanzhifeng" latitude:@"39.91553168" longtitude:@"116.43575629"];
 //    FFLoactionAnotation *secondTation = [[FFLoactionAnotation alloc] initWithtitle:@"hanzhifengwnwnw" latitude:@"39.91553168" longtitude:@"106.43575629"];
 //    [self.annotions addObject:firstTation];
@@ -61,6 +63,7 @@ RCT_CUSTOM_VIEW_PROPERTY(center, CLLocationCoordinate2D, RCTBaiduMapView) {
 //    [_mapView addAnnotations:[self.annotions copy]];
     return mapView;
 }
+
 
 -(void)mapview:(BMKMapView *)mapView
  onDoubleClick:(CLLocationCoordinate2D)coordinate {
@@ -110,6 +113,22 @@ didSelectAnnotationView:(BMKAnnotationView *)view {
                                         @"title": [[view annotation] title],
                                         @"companyId":ann.companyId,
                                         @"address":ann.address,
+                                        @"position": @{
+                                                @"latitude": @([[view annotation] coordinate].latitude),
+                                                @"longitude": @([[view annotation] coordinate].longitude)
+                                                }
+                                        }
+                                };
+        
+        [self sendEvent:mapView params:event];
+    }
+    
+    if ([view isKindOfClass:[ZKCustomAnnotationView class]]) {
+//        ZKLoactionAnotation *zkAnn = (ZKLoactionAnotation *)view.annotation;
+        NSDictionary* event = @{
+                                @"type": @"onMarkerClick",
+                                @"params": @{
+                                        @"title": [[view annotation] title],
                                         @"position": @{
                                                 @"latitude": @([[view annotation] coordinate].latitude),
                                                 @"longitude": @([[view annotation] coordinate].longitude)
@@ -173,6 +192,16 @@ didSelectAnnotationView:(BMKAnnotationView *)view {
         [annotationView updateCustomAnnotationView:locationAnotaion];
         return annotationView;
     }
+    
+    if ([annotation isKindOfClass:[ZKLoactionAnotation class]]) {
+        ZKLoactionAnotation *zkAnn = (ZKLoactionAnotation *)annotation;
+        
+        ZKCustomAnnotationView *cusView = [[ZKCustomAnnotationView alloc] initWithAnnotation:zkAnn reuseIdentifier:@"zkAnnotation"];
+        cusView.paopaoView = nil;
+        cusView.canShowCallout = 0;
+        
+        return cusView;
+    }
     return nil;
 }
 
@@ -214,6 +243,10 @@ didSelectAnnotationView:(BMKAnnotationView *)view {
         return;
     }
     mapView.onChange(params);
+}
+
+- (void)dealloc{
+    NSLog(@"dealloc");
 }
 
 @end
