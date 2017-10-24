@@ -27,10 +27,32 @@ import com.facebook.react.bridge.ReadableMap;
  */
 public class MarkerUtil {
 
-    public static void updateMaker(Marker maker, ReadableMap option) {
+    public static void updateMaker(Marker maker, ReadableMap option,Context mReactContext) {
         LatLng position = getLatLngFromOption(option);
         maker.setPosition(position);
         maker.setTitle(option.getString("title"));
+        Bundle mBundle = new Bundle();
+//        DataBean dataBean=new DataBean();
+        try {
+            mBundle.putString(Constant.MAIN_MARKER, option.getString(Constant.MAIN_MARKER));
+            mBundle.putString(Constant.ADDRESS, option.getString(Constant.ADDRESS));
+            mBundle.putString(Constant.COMPANY_ID, option.getString(Constant.COMPANY_ID));
+        } catch (NoSuchKeyException e) {
+            e.printStackTrace();
+        }
+
+        maker.setExtraInfo(mBundle);
+
+        if (!TextUtils.isEmpty(maker.getTitle()) && maker.getTitle().equals("my_location")) {
+            //定位地址
+            BitmapDescriptor bitmapLocation = BitmapDescriptorFactory.fromResource(R.mipmap.my_location);
+            maker.setIcon(bitmapLocation);
+        } else {
+            TextView mTextView = (TextView) LayoutInflater.from(mReactContext).inflate(R.layout.item_marker, null);
+            mTextView.setText(maker.getTitle());
+            BitmapDescriptor bitmap1 = BitmapDescriptorFactory.fromView(mTextView);
+            maker.setIcon(bitmap1);
+        }
     }
 
     public static Marker addMarker(MapView mapView, ReadableMap option, final  Context mContext) {
