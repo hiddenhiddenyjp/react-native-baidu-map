@@ -18,10 +18,11 @@ import com.baidu.mapapi.map.MapPoi;
 import com.baidu.mapapi.map.MapStatus;
 import com.baidu.mapapi.map.MapStatusUpdate;
 import com.baidu.mapapi.map.MapStatusUpdateFactory;
-import com.baidu.mapapi.map.MapView;
+import com.baidu.mapapi.map.TextureMapView;
 import com.baidu.mapapi.SDKInitializer;
 import com.baidu.mapapi.map.MapViewLayoutParams;
 import com.baidu.mapapi.map.Marker;
+import com.baidu.mapapi.map.TextureMapView;
 import com.baidu.mapapi.model.LatLng;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReadableArray;
@@ -39,7 +40,7 @@ import java.util.List;
 /**
  * Created by lovebing on 12/20/2015.
  */
-public class BaiduMapViewManager extends ViewGroupManager<MapView> {
+public class BaiduMapViewManager extends ViewGroupManager<TextureMapView> {
 
     private static final String REACT_CLASS = "RCTBaiduMapView";
 
@@ -59,15 +60,16 @@ public class BaiduMapViewManager extends ViewGroupManager<MapView> {
         SDKInitializer.initialize(context);
     }
 
-    public MapView createViewInstance(ThemedReactContext context) {
+    public TextureMapView createViewInstance(ThemedReactContext context) {
         mReactContext = context;
-        MapView mapView = new MapView(context);
-        setListeners(mapView);
-        return mapView;
+        TextureMapView TextureMapView = new TextureMapView(context);
+//        TextureMapView.clearAnimation();
+        setListeners(TextureMapView);
+        return TextureMapView;
     }
 
     @Override
-    public void addView(MapView parent, View child, int index) {
+    public void addView(TextureMapView parent, View child, int index) {
         if (childrenPoints != null) {
             Point point = new Point();
             ReadableArray item = childrenPoints.getArray(index);
@@ -81,38 +83,39 @@ public class BaiduMapViewManager extends ViewGroupManager<MapView> {
                 parent.addView(child, mapViewLayoutParams);
             }
         }
+        
 
     }
 
     @ReactProp(name = "zoomControlsVisible")
-    public void setZoomControlsVisible(MapView mapView, boolean zoomControlsVisible) {
-        mapView.showZoomControls(zoomControlsVisible);
+    public void setZoomControlsVisible(TextureMapView TextureMapView, boolean zoomControlsVisible) {
+        TextureMapView.showZoomControls(zoomControlsVisible);
     }
 
     @ReactProp(name = "trafficEnabled")
-    public void setTrafficEnabled(MapView mapView, boolean trafficEnabled) {
-        mapView.getMap().setTrafficEnabled(trafficEnabled);
+    public void setTrafficEnabled(TextureMapView TextureMapView, boolean trafficEnabled) {
+        TextureMapView.getMap().setTrafficEnabled(trafficEnabled);
     }
 
     @ReactProp(name = "baiduHeatMapEnabled")
-    public void setBaiduHeatMapEnabled(MapView mapView, boolean baiduHeatMapEnabled) {
-        mapView.getMap().setBaiduHeatMapEnabled(baiduHeatMapEnabled);
+    public void setBaiduHeatMapEnabled(TextureMapView TextureMapView, boolean baiduHeatMapEnabled) {
+        TextureMapView.getMap().setBaiduHeatMapEnabled(baiduHeatMapEnabled);
     }
 
     @ReactProp(name = "mapType")
-    public void setMapType(MapView mapView, int mapType) {
-        mapView.getMap().setMapType(mapType);
+    public void setMapType(TextureMapView TextureMapView, int mapType) {
+        TextureMapView.getMap().setMapType(mapType);
     }
 
     @ReactProp(name = "zoom")
-    public void setZoom(MapView mapView, float zoom) {
+    public void setZoom(TextureMapView TextureMapView, float zoom) {
         MapStatus mapStatus = new MapStatus.Builder().zoom(zoom).build();
         MapStatusUpdate mapStatusUpdate = MapStatusUpdateFactory.newMapStatus(mapStatus);
-        mapView.getMap().setMapStatus(mapStatusUpdate);
+        TextureMapView.getMap().setMapStatus(mapStatusUpdate);
     }
 
     @ReactProp(name = "center")
-    public void setCenter(MapView mapView, ReadableMap position) {
+    public void setCenter(TextureMapView TextureMapView, ReadableMap position) {
         if (position != null) {
             double latitude = position.getDouble("latitude");
             double longitude = position.getDouble("longitude");
@@ -121,14 +124,14 @@ public class BaiduMapViewManager extends ViewGroupManager<MapView> {
                     .target(point)
                     .build();
             MapStatusUpdate mapStatusUpdate = MapStatusUpdateFactory.newMapStatus(mapStatus);
-            mapView.getMap().setMapStatus(mapStatusUpdate);
+            TextureMapView.getMap().setMapStatus(mapStatusUpdate);
         }
     }
 
     @ReactProp(name = "marker")
-    public void setMarker(MapView mapView, ReadableMap option) {
+    public void setMarker(TextureMapView TextureMapView, ReadableMap option) {
         if (option != null) {
-            String key = "marker_" + mapView.getId();
+            String key = "marker_" + TextureMapView.getId();
             Marker marker = mMarkerMap.get(key);
             BitmapDescriptor bitmap;
             if (!TextUtils.isEmpty(option.getString(Constant.MAIN_MARKER)) && option.getString(Constant.MAIN_MARKER).equals(Constant.MAIN_MARKER)) {
@@ -150,7 +153,7 @@ public class BaiduMapViewManager extends ViewGroupManager<MapView> {
             if (marker != null) {
                 MarkerUtil.updateMaker(marker, option,mReactContext);
             } else {
-                marker = MarkerUtil.addMarker(mapView, option, mReactContext);
+                marker = MarkerUtil.addMarker(TextureMapView, option, mReactContext);
                 mMarkerMap.put(key, marker);
             }
         }
@@ -159,8 +162,8 @@ public class BaiduMapViewManager extends ViewGroupManager<MapView> {
     private List<Marker> markers;
 
     @ReactProp(name = "markers")
-    public void setMarkers(MapView mapView, ReadableArray options) {
-        String key = "markers_" + mapView.getId();
+    public void setMarkers(TextureMapView TextureMapView, ReadableArray options) {
+        String key = "markers_" + TextureMapView.getId();
         markers = mMarkersMap.get(key);
         if (markers == null) {
             markers = new ArrayList<>();
@@ -170,7 +173,7 @@ public class BaiduMapViewManager extends ViewGroupManager<MapView> {
             if (markers.size() > i + 1 && markers.get(i) != null) {
                 MarkerUtil.updateMaker(markers.get(i), option,mReactContext);
             } else {
-                markers.add(i, MarkerUtil.addMarker(mapView, option, mReactContext));
+                markers.add(i, MarkerUtil.addMarker(TextureMapView, option, mReactContext));
             }
         }
         if (options.size() < markers.size()) {
@@ -185,18 +188,18 @@ public class BaiduMapViewManager extends ViewGroupManager<MapView> {
     }
 
     @ReactProp(name = "childrenPoints")
-    public void setChildrenPoints(MapView mapView, ReadableArray childrenPoints) {
+    public void setChildrenPoints(TextureMapView TextureMapView, ReadableArray childrenPoints) {
         this.childrenPoints = childrenPoints;
     }
 
     /**
-     * @param mapView
+     * @param TextureMapView
      */
-    private void setListeners(final MapView mapView) {
-        BaiduMap map = mapView.getMap();
+    private void setListeners(final TextureMapView TextureMapView) {
+        BaiduMap map = TextureMapView.getMap();
 
         if (mMarkerText == null) {
-            mMarkerText = new TextView(mapView.getContext());
+            mMarkerText = new TextView(TextureMapView.getContext());
             mMarkerText.setBackgroundResource(R.drawable.popup);
             mMarkerText.setPadding(32, 32, 32, 32);
         }
@@ -215,12 +218,17 @@ public class BaiduMapViewManager extends ViewGroupManager<MapView> {
 
             @Override
             public void onMapStatusChangeStart(MapStatus mapStatus) {
-                sendEvent(mapView, "onMapStatusChangeStart", getEventParams(mapStatus));
+                sendEvent(TextureMapView, "onMapStatusChangeStart", getEventParams(mapStatus));
+            }
+
+            @Override
+            public void onMapStatusChangeStart(MapStatus mapStatus, int i) {
+                sendEvent(TextureMapView, "onMapStatusChangeStart", getEventParams(mapStatus));
             }
 
             @Override
             public void onMapStatusChange(MapStatus mapStatus) {
-                sendEvent(mapView, "onMapStatusChange", getEventParams(mapStatus));
+                sendEvent(TextureMapView, "onMapStatusChange", getEventParams(mapStatus));
             }
 
             @Override
@@ -228,25 +236,25 @@ public class BaiduMapViewManager extends ViewGroupManager<MapView> {
                 if (mMarkerText.getVisibility() != View.GONE) {
                     mMarkerText.setVisibility(View.GONE);
                 }
-                sendEvent(mapView, "onMapStatusChangeFinish", getEventParams(mapStatus));
+                sendEvent(TextureMapView, "onMapStatusChangeFinish", getEventParams(mapStatus));
             }
         });
 
         map.setOnMapLoadedCallback(new BaiduMap.OnMapLoadedCallback() {
             @Override
             public void onMapLoaded() {
-                sendEvent(mapView, "onMapLoaded", null);
+                sendEvent(TextureMapView, "onMapLoaded", null);
             }
         });
 
         map.setOnMapClickListener(new BaiduMap.OnMapClickListener() {
             @Override
             public void onMapClick(LatLng latLng) {
-                mapView.getMap().hideInfoWindow();
+                TextureMapView.getMap().hideInfoWindow();
                 WritableMap writableMap = Arguments.createMap();
                 writableMap.putDouble("latitude", latLng.latitude);
                 writableMap.putDouble("longitude", latLng.longitude);
-                sendEvent(mapView, "onMapClick", writableMap);
+                sendEvent(TextureMapView, "onMapClick", writableMap);
             }
 
             @Override
@@ -256,7 +264,7 @@ public class BaiduMapViewManager extends ViewGroupManager<MapView> {
                 writableMap.putString("uid", mapPoi.getUid());
                 writableMap.putDouble("latitude", mapPoi.getPosition().latitude);
                 writableMap.putDouble("longitude", mapPoi.getPosition().longitude);
-                sendEvent(mapView, "onMapPoiClick", writableMap);
+                sendEvent(TextureMapView, "onMapPoiClick", writableMap);
                 return true;
             }
         });
@@ -266,7 +274,7 @@ public class BaiduMapViewManager extends ViewGroupManager<MapView> {
                 WritableMap writableMap = Arguments.createMap();
                 writableMap.putDouble("latitude", latLng.latitude);
                 writableMap.putDouble("longitude", latLng.longitude);
-                sendEvent(mapView, "onMapDoubleClick", writableMap);
+                sendEvent(TextureMapView, "onMapDoubleClick", writableMap);
             }
         });
 
@@ -283,9 +291,9 @@ public class BaiduMapViewManager extends ViewGroupManager<MapView> {
                         mMarkerText.setText(marker.getTitle());
                         InfoWindow infoWindow = new InfoWindow(mMarkerText, marker.getPosition(), -80);
                         mMarkerText.setVisibility(View.GONE);
-//                    mapView.getMap().showInfoWindow(infoWindow);
+//                    TextureMapView.getMap().showInfoWindow(infoWindow);
                     } else {
-//                    mapView.getMap().hideInfoWindow();
+//                    TextureMapView.getMap().hideInfoWindow();
                     }
 
 
@@ -328,7 +336,7 @@ public class BaiduMapViewManager extends ViewGroupManager<MapView> {
                     writableMap.putString(Constant.ADDRESS, (String) marker.getExtraInfo().get(Constant.ADDRESS));
                     writableMap.putString(Constant.COMPANY_ID, (String) marker.getExtraInfo().get(Constant.COMPANY_ID));
                 }
-                sendEvent(mapView, "onMarkerClick", writableMap);
+                sendEvent(TextureMapView, "onMarkerClick", writableMap);
                 return true;
             }
         });
@@ -339,13 +347,13 @@ public class BaiduMapViewManager extends ViewGroupManager<MapView> {
      * @param eventName
      * @param params
      */
-    private void sendEvent(MapView mapView, String eventName, @Nullable WritableMap params) {
+    private void sendEvent(TextureMapView TextureMapView, String eventName, @Nullable WritableMap params) {
         WritableMap event = Arguments.createMap();
         event.putMap("params", params);
         event.putString("type", eventName);
         mReactContext
                 .getJSModule(RCTEventEmitter.class)
-                .receiveEvent(mapView.getId(),
+                .receiveEvent(TextureMapView.getId(),
                         "topChange",
                         event);
     }

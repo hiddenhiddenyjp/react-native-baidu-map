@@ -18,6 +18,7 @@ import com.baidu.mapapi.map.MapView;
 import com.baidu.mapapi.map.Marker;
 import com.baidu.mapapi.map.MarkerOptions;
 import com.baidu.mapapi.map.OverlayOptions;
+import com.baidu.mapapi.map.TextureMapView;
 import com.baidu.mapapi.model.LatLng;
 import com.facebook.react.bridge.NoSuchKeyException;
 import com.facebook.react.bridge.ReadableMap;
@@ -55,7 +56,7 @@ public class MarkerUtil {
         }
     }
 
-    public static Marker addMarker(MapView mapView, ReadableMap option, final  Context mContext) {
+    public static Marker addMarker(TextureMapView mapView, ReadableMap option, final  Context mContext) {
         BitmapDescriptor bitmap;
 
         if (!TextUtils.isEmpty(option.getString(Constant.MAIN_MARKER)) && option.getString(Constant.MAIN_MARKER).equals(Constant.MAIN_MARKER)) {
