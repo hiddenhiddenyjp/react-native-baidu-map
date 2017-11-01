@@ -44,7 +44,7 @@ public class BaiduMapViewManager extends ViewGroupManager<TextureMapView> {
 
     private static final String REACT_CLASS = "RCTBaiduMapView";
 
-    private ThemedReactContext mReactContext;
+    public static ThemedReactContext mReactContext;
 
     private ReadableArray childrenPoints;
     private HashMap<String, Marker> mMarkerMap = new HashMap<>();
@@ -65,6 +65,7 @@ public class BaiduMapViewManager extends ViewGroupManager<TextureMapView> {
         TextureMapView TextureMapView = new TextureMapView(context);
 //        TextureMapView.clearAnimation();
         setListeners(TextureMapView);
+//        mapListener.onInstance(TextureMapView);
         return TextureMapView;
     }
 
@@ -88,8 +89,17 @@ public class BaiduMapViewManager extends ViewGroupManager<TextureMapView> {
     }
 
     @ReactProp(name = "zoomControlsVisible")
-    public void setZoomControlsVisible(TextureMapView TextureMapView, boolean zoomControlsVisible) {
-        TextureMapView.showZoomControls(zoomControlsVisible);
+    public void setZoomControlsVisible(TextureMapView TextureMapView, String  zoomControlsVisible) {
+//        TextureMapView.showZoomControls(zoomControlsVisible);
+        if (!TextUtils.isEmpty(zoomControlsVisible)){
+            if ("onPause".equals(zoomControlsVisible)){
+                onPause(TextureMapView,true);
+            }else if ("onResume".equals(zoomControlsVisible)){
+                onResume(TextureMapView,true);
+            }
+        }
+
+
     }
 
     @ReactProp(name = "trafficEnabled")
@@ -357,4 +367,26 @@ public class BaiduMapViewManager extends ViewGroupManager<TextureMapView> {
                         "topChange",
                         event);
     }
+
+    public interface  BDMapListener{
+        void onInstance(TextureMapView textureMapView);
+    }
+    private BDMapListener mapListener;
+    public void BDMapListener(BDMapListener listener){
+        this.mapListener=listener;
+    }
+//    @ReactProp(name = "onPause")
+    public void onPause(TextureMapView TextureMapView, boolean result){
+        if (result&&TextureMapView!=null){
+            TextureMapView.onPause();
+        }
+
+    }
+//    @ReactProp(name = "onResume")
+    public void onResume(TextureMapView TextureMapView, boolean result){
+        if (result&&TextureMapView!=null){
+            TextureMapView.onResume();
+        }
+    }
+
 }
