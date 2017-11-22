@@ -9,6 +9,8 @@
 #import "RCTBaiduMapView.h"
 #import "FFLoactionAnotation.h"
 #import "ZKLoactionAnotation.h"
+#import "JZLocationConverter.h"
+
 
 @implementation RCTBaiduMapView {
     BMKMapView* _mapView;
@@ -42,6 +44,24 @@
  */
 
 -(void)setMarkers:(NSArray *)markers {
+    
+    if (_annotations == nil) {
+        _annotations = [NSMutableArray array];
+    }
+    
+    if (_annotations.count) {
+        [self removeAnnotations:_annotations];
+        [_annotations removeAllObjects];
+    }
+    
+    for (int i = 0; i < markers.count; i++)  {
+        NSDictionary *option = [markers objectAtIndex:i];
+        
+        BMKPointAnnotation *annotation = [[BMKPointAnnotation alloc]init];
+        [self addMarker:annotation option:option];
+    }
+    
+    /*
     int markersCount = [markers count];
     if(_annotations == nil) {
         _annotations = [[NSMutableArray alloc] init];
@@ -79,9 +99,8 @@
                 [_annotations removeObject:annotation];
             }
         }
-        
-        
     }
+    */
 }
 
 
@@ -91,11 +110,16 @@
     CLLocationCoordinate2D coor;
     coor.latitude = lat;
     coor.longitude = lng;
-    return coor;
+    
+    return [JZLocationConverter gcj02ToBd09:coor];
 }
 
 -(void)addMarker:(BMKPointAnnotation *)annotation option:(NSDictionary *)option {
 //    [self updateMarker:annotation option:option];
+    
+    if (_annotations == nil) {
+        _annotations = [NSMutableArray array];
+    }
     
     if (option[@"main_marker"] != nil && ![option[@"main_marker"] isEqualToString:@""]) {
         //从某一个职位进入地图添加标签
@@ -107,6 +131,8 @@
         ZKLoactionAnotation *ann = [[ZKLoactionAnotation alloc] init];
         ann.coordinate = coor;
         ann.title = title;
+        
+        [_annotations addObject:ann];
         
         [self addAnnotation:ann];
     }else{
@@ -122,6 +148,9 @@
         
         ann.companyId = option[@"companyId"];
         ann.address = option[@"address"];
+        
+        [_annotations addObject:ann];
+        
         [self addAnnotation:ann];
     }
 }

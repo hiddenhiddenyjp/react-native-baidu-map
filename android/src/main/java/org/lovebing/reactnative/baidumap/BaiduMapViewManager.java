@@ -10,6 +10,7 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.baidu.mapapi.CoordType;
 import com.baidu.mapapi.map.BaiduMap;
 import com.baidu.mapapi.map.BitmapDescriptor;
 import com.baidu.mapapi.map.BitmapDescriptorFactory;
@@ -57,6 +58,7 @@ public class BaiduMapViewManager extends ViewGroupManager<TextureMapView> {
 
 
     public void initSDK(Context context) {
+        SDKInitializer.setCoordType(CoordType.GCJ02);
         SDKInitializer.initialize(context);
     }
 
